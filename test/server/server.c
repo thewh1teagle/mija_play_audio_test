@@ -75,27 +75,27 @@ int main(int argc , char *argv[]) {
         perror("shbf_rcv_start");
     } else {
         //Receive a message from client
-		
+		shbf_rcv_fd(fd);
+		shbf_set_size(fd, 1024);
         while( (read_size = recv(client_sock , client_message , 1024 , 0)) > 0 )
         {
             printf("new Client message\n");
-            shbf_rcv_fd(fd);
+            
             file_content_to_send = (unsigned char *)malloc(sizeof(client_message));
             if (file_content_to_send == (unsigned char *)0x0) {
             printf("[audio_player] malloc error");
             }
             read_count =  1024;
+			
             printf("sending size of %i \n", read_count);
             if (0 < (int)read_count) {
-                shbf_set_size(fd, read_count);
                 shbf_rcv_send_message(fd,client_message,read_count);
                 puts("send over");
-                free(file_content_to_send);
             }
         }
     }
 
-    
+    free(file_content_to_send);
 	if(read_size == 0) {
 		puts("Client disconnected");
 		fflush(stdout);
