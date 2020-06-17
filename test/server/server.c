@@ -22,7 +22,7 @@ int main(int argc , char *argv[]) {
 
     int socket_desc , client_sock , c , read_size;
 	struct sockaddr_in server , client;
-	char client_message[2000];
+	char client_message[1024];
 
     	//Create socket
 	socket_desc = socket(AF_INET , SOCK_STREAM , 0);
@@ -75,7 +75,8 @@ int main(int argc , char *argv[]) {
         perror("shbf_rcv_start");
     } else {
         //Receive a message from client
-        while( (read_size = recv(client_sock , client_message , 2000 , 0)) > 0 )
+		
+        while( (read_size = recv(client_sock , client_message , 1024 , 0)) > 0 )
         {
             printf("new Client message\n");
             shbf_rcv_fd(fd);
@@ -83,12 +84,11 @@ int main(int argc , char *argv[]) {
             if (file_content_to_send == (unsigned char *)0x0) {
             printf("[audio_player] malloc error");
             }
-            read_count =  1872; //sizeof(client_message);
+            read_count =  1024;
             printf("sending size of %i \n", read_count);
             if (0 < (int)read_count) {
                 shbf_set_size(fd, read_count);
                 shbf_rcv_send_message(fd,client_message,read_count);
-                // sleep(2);
                 puts("send over");
                 free(file_content_to_send);
             }
@@ -104,6 +104,6 @@ int main(int argc , char *argv[]) {
 	{
 		perror("recv failed");
 	}
-	
+	close(client_sock);
 	return 0;
 }
